@@ -16,10 +16,11 @@ class BasicAuth(Auth):
     BasicAuth class for the API
     """
 
-    def extract_base64_authorization_header(self, authorization_header: str) -> str:
+    def extract_base64_authorization_header(
+            self, authorization_header: str) -> str:
         """Extract base64 authorization header"""
 
-        if type(authorization_header) == str:
+        if isinstance(authorization_header, str):
             pattern = r"Basic (?P<token>.+)"
             match = re.fullmatch(pattern, authorization_header.strip())
             if match is not None:
@@ -30,7 +31,7 @@ class BasicAuth(Auth):
         self, base64_authorization_header: str
     ) -> str:
         """Decode base64 authorization header"""
-        if type(base64_authorization_header) == str:
+        if isinstance(base64_authorization_header, str):
             try:
                 return base64.b64decode(
                     base64_authorization_header, validate=True
@@ -42,9 +43,10 @@ class BasicAuth(Auth):
         self, decoded_base64_authorization_header: str
     ) -> Tuple[str, str]:
         """Extract user credentials"""
-        if type(decoded_base64_authorization_header) == str:
+        if isinstance(decoded_base64_authorization_header, str):
             pattern = r"(?P<user>.+):(?P<password>.+)"
-            match = re.fullmatch(pattern, decoded_base64_authorization_header.strip())
+            match = re.fullmatch
+            (pattern, decoded_base64_authorization_header.strip())
             if match is not None:
                 return match.group("user"), match.group("password")
 
@@ -52,7 +54,7 @@ class BasicAuth(Auth):
         self, user_email: str, user_pwd: str
     ) -> TypeVar("User"):
         """Get user object from credentials"""
-        if type(user_email) == str and type(user_pwd) == str:
+        if isinstance(user_email, str) and isinstance(user_pwd, str):
             try:
                 users = User.search({"email": user_email})
             except Exception as ex:
