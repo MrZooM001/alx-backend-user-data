@@ -43,12 +43,15 @@ class BasicAuth(Auth):
         self, decoded_base64_authorization_header: str
     ) -> Tuple[str, str]:
         """Extract user credentials"""
-        if type(decoded_base64_authorization_header) is str:
-            pattern = r"(?P<user>.+):(?P<password>.+)"
-            match = re.fullmatch
-            (pattern, decoded_base64_authorization_header.strip(':', 1))
-            if match is not None:
-                return match.group("user"), match.group("password")
+        if decoded_base64_authorization_header is None:
+            return None, None
+        if not isinstance(decoded_base64_authorization_header, str):
+            return None, None
+        if ':' not in decoded_base64_authorization_header:
+            return None, None
+
+        athoriz_headers = decoded_base64_authorization_header.split(':', 1)
+        return athoriz_headers[0], athoriz_headers[1]
 
     def user_object_from_credentials(
         self, user_email: str, user_pwd: str
