@@ -6,7 +6,8 @@ from flask import jsonify, abort, request
 from api.v1.views import app_views
 
 
-@app_views.route("/auth_session/login", methods=["POST"], strict_slashes=False)
+@app_views.route("/auth_session/login",
+                 methods=["POST"], strict_slashes=False)
 def session_login() -> str:
     """POST /api/v1/auth_session/login
     Return:
@@ -42,7 +43,8 @@ def session_login() -> str:
     return respo
 
 
-@app_views.route("/auth_session/logout", methods=["DELETE"], strict_slashes=False)
+@app_views.route("/auth_session/logout",
+                 methods=["DELETE"], strict_slashes=False)
 def session_logout():
     """DELETE /api/v1/auth_session/logout
     Return:
