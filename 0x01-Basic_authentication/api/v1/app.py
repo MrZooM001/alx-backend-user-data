@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
-auth_instance = getenv("AUTH_TYPE", "auth")
+auth_instance = getenv("AUTH_TYPE")
 if auth_instance == "auth":
     auth = Auth()
 if auth_instance == "basic_auth":
@@ -41,21 +41,23 @@ def not_found(error) -> str:
 
 
 @app.before_request
-def authenticate_user():
+def authenticate_user() -> str:
     """User authentication before a request"""
-    if auth:
-        excluded_paths = [
-            "/api/v1/status/",
-            "/api/v1/unauthorized/",
-            "/api/v1/forbidden/",
-        ]
-        if auth.require_auth(request.path, excluded_paths):
-            authoriz_header = auth.authorization_header(request)
-            cur_user = auth.current_user(request)
-            if authoriz_header is None:
-                abort(401)
-            if cur_user is None:
-                abort(403)
+    if auth is None:
+        return
+
+    excluded_paths = [
+        "/api/v1/status/",
+        "/api/v1/unauthorized/",
+        "/api/v1/forbidden/",
+    ]
+    if not auth.require_auth(request.path, excluded_paths):
+        return
+
+    if auth.authorization_header(request) is None:
+        abort(401)
+    if auth.current_user(request) is None:
+        abort(403)
 
 
 if __name__ == "__main__":
