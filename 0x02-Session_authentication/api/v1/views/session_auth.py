@@ -4,10 +4,10 @@
 from os import getenv
 from flask import jsonify, abort, request
 from api.v1.views import app_views
+from models.user import User
 
 
-@app_views.route("/auth_session/login",
-                 methods=["POST"], strict_slashes=False)
+@app_views.route("/auth_session/login", methods=["POST"], strict_slashes=False)
 def session_login() -> str:
     """POST /api/v1/auth_session/login
     Return:
@@ -20,24 +20,18 @@ def session_login() -> str:
     if not user_pwd:
         return jsonify({"error": "password missing"}), 400
 
-    try:
-        from models.user import User
-
-        users = User.search({"email": user_email})
-    except Exception as ex:
-        return jsonify({"error": "no user found for this email"}), 404
+    users = User.search({"email": user_email})
 
     if not users:
         return jsonify({"error": "no user found for this email"}), 404
-    for user in users:
-        if not user.is_valid_password(user_pwd):
-            return jsonify({"error": "wrong password"}), 401
+
+    if not users[0].is_valid_password(user_pwd):
+        return jsonify({"error": "wrong password"}), 401
 
     from api.v1.app import auth
 
-    user = users[0]
-    session_id = auth.create_session(user.id)
-    respo = jsonify(user.to_json())
+    session_id = auth.create_session(getattr(users[0], "id"))
+    respo = jsonify(users[0].to_json())
     session_name = getenv("SESSION_NAME")
     respo.set_cookie(session_name, session_id)
     return respo
