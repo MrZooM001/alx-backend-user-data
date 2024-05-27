@@ -1,6 +1,8 @@
 __pycache__/
-*main.py
+*main*
 *.csv
 venv/
 .venv/
 basic-auth/
+*.json
+*.db
