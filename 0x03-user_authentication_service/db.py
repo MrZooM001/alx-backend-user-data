@@ -4,9 +4,15 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.session import Session
 
+import logging
 from user import Base, User
+from typing import Dict
+
+logging.disable(logging.WARNING)
 
 
 class DB:
@@ -37,3 +43,33 @@ class DB:
             self._session.rollback()
             raise
         return new_user
+
+    def find_user_by(self, **kwargs: Dict[str, str]) -> User:
+        """Find user"""
+        session = self.__session
+        try:
+            user = session.query(User).filter_by(**kwargs).one()
+        except NoResultFound:
+            raise NoResultFound()
+        except InvalidRequestError:
+            raise InvalidRequestError()
+        return user
+    
+    def update_user(self, user_id: int, **kwargs: Dict[str, str]) -> None:
+        """Update user
+        """
+        try:
+            user = self.find_user_by(id=user_id)
+        except NoResultFound:
+            raise NoResultFound()
+        
+        for key, value in kwargs.items():
+            if hasattr(user, key):
+                setattr(user, key, value)
+            else:
+                raise ValueError()
+        
+        try:
+            self.__session.commit()
+        except InvalidRequestError:
+            raise ValueError()
