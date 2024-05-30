@@ -8,6 +8,7 @@ from sqlalchemy.orm.exc import NoResultFound
 import bcrypt
 from uuid import uuid4
 from typing import Union
+
 # import logging
 
 # logging.disable(logging.WARNING)
@@ -74,3 +75,26 @@ class Auth:
             self._db.update_user(user.id, session_id=None)
         except NoResultFound:
             pass
+
+    def get_reset_password_token(self, email: str) -> str:
+        """Generate a reset password token"""
+        try:
+            user = self._db.find_user_by(email=email)
+        except NoResultFound:
+            user = None
+        if user is None:
+            raise ValueError()
+        reset_token = _generate_uuid()
+        self._db.update_user(user.id, reset_token=reset_token)
+        return reset_token
+
+    def update_password(self, reset_token: str, password: str) -> None:
+        """Update user's password"""
+        try:
+            user = self._db.find_user_by(reset_token=reset_token)
+            hashed = _hash_password(password)
+            self._db.update_user(
+                user.id, reset_token=None, hashed_password=hashed
+            )
+        except NoResultFound:
+            raise ValueError()
