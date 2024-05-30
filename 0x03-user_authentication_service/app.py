@@ -3,9 +3,10 @@
 
 from flask import Flask, abort, jsonify, request, redirect
 from auth import Auth
-import logging
 
-logging.disable(logging.WARNING)
+# import logging
+
+# logging.disable(logging.WARNING)
 
 
 AUTH = Auth()
@@ -61,10 +62,10 @@ def profile():
     """Profile endpoint"""
     session_id = request.cookies.get("session_id")
     user = AUTH.get_user_from_session(session_id)
-    if user:
-        return jsonify({"email": f"{user.email}"}), 200
-    else:
+    if user is None:
         abort(403)
+
+    return jsonify({"email": user.email})
 
 
 if __name__ == "__main__":
