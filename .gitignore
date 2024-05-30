@@ -1,5 +1,5 @@
 __pycache__/
-*main*
+[0-9]*main.py
 *.csv
 venv/
 .venv/
