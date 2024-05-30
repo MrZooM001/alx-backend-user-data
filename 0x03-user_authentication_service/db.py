@@ -8,9 +8,9 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.session import Session
 from user import Base, User
-# import logging
+import logging
 
-# logging.disable(logging.WARNING)
+logging.disable(logging.WARNING)
 
 valid_attr = ["id", "email", "hashed_password", "session_id", "reset_token"]
 
