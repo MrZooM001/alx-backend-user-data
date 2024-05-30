@@ -9,9 +9,9 @@ import bcrypt
 from uuid import uuid4
 from typing import Union
 
-import logging
+# import logging
 
-logging.disable(logging.WARNING)
+# logging.disable(logging.WARNING)
 
 
 def _hash_password(password: str) -> bytes:

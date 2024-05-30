@@ -4,9 +4,9 @@
 from flask import Flask, abort, jsonify, request, redirect
 from auth import Auth
 
-import logging
+# import logging
 
-logging.disable(logging.WARNING)
+# logging.disable(logging.WARNING)
 
 
 AUTH = Auth()
