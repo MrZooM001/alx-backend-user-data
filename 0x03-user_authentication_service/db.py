@@ -13,6 +13,8 @@ from user import Base, User
 
 logging.disable(logging.WARNING)
 
+valid_attr = ["id", "email", "hashed_password", "session_id", "reset_token"]
+
 
 class DB:
     """DB class"""
@@ -46,13 +48,13 @@ class DB:
     def find_user_by(self, **kwargs) -> User:
         """Find user"""
         session = self.__session
-        try:
-            user = session.query(User).filter_by(**kwargs).one()
-        except NoResultFound:
-            raise NoResultFound()
-        except InvalidRequestError:
+        if not kwargs or any(x not in valid_attr for x in kwargs):
             raise InvalidRequestError()
-        return user
+
+        try:
+            return session.query(User).filter_by(**kwargs).one()
+        except Exception as ex:
+            raise NoResultFound()
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """Update user"""
