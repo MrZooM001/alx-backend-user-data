@@ -10,7 +10,6 @@ from sqlalchemy.orm.session import Session
 
 import logging
 from user import Base, User
-from typing import Dict
 
 logging.disable(logging.WARNING)
 
@@ -44,7 +43,7 @@ class DB:
             raise
         return new_user
 
-    def find_user_by(self, **kwargs: Dict[str, str]) -> User:
+    def find_user_by(self, **kwargs) -> User:
         """Find user"""
         session = self.__session
         try:
@@ -55,7 +54,7 @@ class DB:
             raise InvalidRequestError()
         return user
 
-    def update_user(self, user_id: int, **kwargs: Dict[str, str]) -> None:
+    def update_user(self, user_id: int, **kwargs) -> None:
         """Update user"""
         try:
             user = self.find_user_by(id=user_id)
@@ -63,11 +62,10 @@ class DB:
             raise NoResultFound()
 
         for key, value in kwargs.items():
-            if hasattr(user, key):
-                setattr(user, key, value)
-            else:
+            if not hasattr(user, key):
                 raise ValueError()
 
+            setattr(user, key, value)
         try:
             self.__session.commit()
         except InvalidRequestError:
