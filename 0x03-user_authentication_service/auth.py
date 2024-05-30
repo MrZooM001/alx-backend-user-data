@@ -39,7 +39,7 @@ class Auth:
                 email=email, hashed_password=_hash_password(password)
             )
 
-    def valid_login(self, email, password) -> bool:
+    def valid_login(self, email: str, password: str) -> bool:
         """Validate a login"""
         try:
             user = self._db.find_user_by(email=email)
